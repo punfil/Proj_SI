@@ -1,1 +1,2 @@
-print("Hello world!")
+class World:
+    print("Hello world!")
