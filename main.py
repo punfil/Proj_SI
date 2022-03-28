@@ -1,3 +1,1 @@
-import this
-import antigravity
-print("Hello world!")
+print("Hello world!, zmiana")
