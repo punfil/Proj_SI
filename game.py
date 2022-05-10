@@ -65,7 +65,7 @@ class Game:
                         x, y = current_player.get_move(x, y)
                         current_player.make_move(x, y)
                         possible_winner = self._board.check_winning()
-                        if possible_winner is not None:
+                        if possible_winner is not None or self._board.check_draw():
                             current_game_winner = possible_winner
                             quit = True
                             break
