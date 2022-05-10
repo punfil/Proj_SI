@@ -13,13 +13,15 @@ class Game:
         self._players = [None for _ in range(constants.players_count)]
         self._players[0] = Player('x', self._board)
         self._players[1] = AIPlayer(diff, 'o', self._board)
-        self._current_player = 'x'
+        self._current_player = constants.starting_player
 
         self._display_component = DisplayComponent()
         self._exit = False
 
     def clear_board(self):
         self._board = Board(self._board_size)
+        for player in self._players:
+            player.board = self._board
 
     def update_ai_player_difficulty(self, new_difficulty):
         self._players[1].level = new_difficulty
@@ -49,17 +51,25 @@ class Game:
         self.deal_with_menu()
         while not self._exit:
             current_game_winner = None
-            while not self._board.check_draw():
+            quit = False
+            while not quit:
                 self._display_component.display_board(self._board)
-                current_player = self.return_player_with_sign(self._current_player)
-                x, y = current_player.get_move()
-                current_player.make_move(x, y)
-                possible_winner = self._board.check_winning()
-                if possible_winner is not None:
-                    current_game_winner = possible_winner
+                event_type, x, y = self._display_component.get_events()
+                if event_type == constants.menu_exit:
+                    self._exit = True
+                    quit = True
                     break
-                self.change_current_player()
+                elif event_type == constants.mouse_clicked:
+                    for i in range(2):
+                        current_player = self.return_player_with_sign(self._current_player)
+                        x, y = current_player.get_move(x, y)
+                        current_player.make_move(x, y)
+                        possible_winner = self._board.check_winning()
+                        if possible_winner is not None:
+                            current_game_winner = possible_winner
+                            quit = True
+                            break
+                        self.change_current_player()
             self._display_component.display_result(constants.results_draw if current_game_winner is None else current_game_winner)
+            self.clear_board()
             self.deal_with_menu()
-
-

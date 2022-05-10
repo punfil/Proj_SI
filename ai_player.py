@@ -14,7 +14,7 @@ class AIPlayer(Player):
             if self._board.check_free(x, y):
                 return x, y
 
-    def get_move(self):
+    def get_move(self, mouse_x, mouse_y):
         if self._change_level == 1:  # Easy - always random
             if self._level == 2:
                 self._change_level = 2
