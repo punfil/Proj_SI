@@ -17,7 +17,6 @@ class DisplayComponent:
                                                  ('Hard_AI', constants.ai_hard)],
                                 onchange=self.set_menu_difficulty_chosen)
         self._menu.add.button('Play', self.set_menu_play_chosen)
-        self._menu.add.button('Instructions', self.set_menu_instruction_chosen)
         self._menu.add.button('Quit', self.set_menu_exit_chosen)
         self._menu_action_chosen = None
         self._menu_difficulty_chosen = constants.ai_easy
@@ -28,6 +27,10 @@ class DisplayComponent:
                                               (constants.pile_width, constants.pile_height))
         self._empty_sign = pygame.transform.scale(pygame.image.load("empty_sign.png"),
                                               (constants.pile_width, constants.pile_height))
+
+        pygame.font.init()  # you have to call this at the start,
+        # if you want to use this module.
+        self._font = pygame.font.SysFont('Comic Sans MS', constants.display_font_size)
 
     def use_menu(self):
         self.set_menu_difficulty_chosen(None, constants.ai_easy)
@@ -43,16 +46,15 @@ class DisplayComponent:
         self._menu_action_chosen = constants.menu_exit
         self._menu.disable()
 
-    def set_menu_instruction_chosen(self):
-        self._menu_action_chosen = constants.menu_instruction
-        self._menu.disable()
-
     def set_menu_difficulty_chosen(self, _, difficulty):
         self._menu_difficulty_chosen = difficulty
 
     def display_result(self, winner):
-        print(f"Wins: {winner}")
-        print("Wanna play again?")
+        self._screen.fill(constants.white_color)
+        text_surface = self._font.render(f"Wins: {winner}.", False, (0,0,0))
+        self._screen.blit(text_surface, (0, 0))
+        pygame.display.update()
+        pygame.display.flip()
 
     def display_board(self, board):
         self._screen.fill(constants.white_color)
@@ -62,15 +64,6 @@ class DisplayComponent:
                                   (i * constants.pile_width, j * constants.pile_height))
         pygame.display.update()
         pygame.display.flip()
-
-    def display_instruction(self):
-        print("!!!!!!!! Quick tutorial just to let you in!")
-        print("You are playing as 'x'. AI plays as 'o'")
-        print("123")
-        print("456")
-        print("789")
-        print("Positioning is left-upper corner based. 1 is located (0, 0)")
-        print("8 is located (2, 1) etc.")
 
     def get_events(self):
         ev = pygame.event.get()

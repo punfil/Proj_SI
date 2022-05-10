@@ -3,6 +3,7 @@ from ai_player import AIPlayer
 from board import Board
 from display_component import DisplayComponent
 import constants
+import time
 
 
 class Game:
@@ -43,33 +44,37 @@ class Game:
             self.update_ai_player_difficulty(variable1)
         elif activity == constants.menu_exit:
             self._exit = constants.menu_exit
-        elif activity == constants.menu_instruction:
-            self._display_component.display_instruction()
-            return self.deal_with_menu()
 
     def play(self):
         self.deal_with_menu()
         while not self._exit:
             current_game_winner = None
             quit = False
+            game_finished = False
+            time_start_displaying_result = None
             while not quit:
-                self._display_component.display_board(self._board)
+                if not game_finished:
+                    self._display_component.display_board(self._board)
+                else:
+                    self._display_component.display_result(current_game_winner)
+                    if time.time()-time_start_displaying_result > constants.results_displaying_time:
+                        quit = True
                 event_type, x, y = self._display_component.get_events()
                 if event_type == constants.menu_exit:
                     self._exit = True
                     quit = True
                     break
-                elif event_type == constants.mouse_clicked:
-                    for i in range(2):
-                        current_player = self.return_player_with_sign(self._current_player)
-                        x, y = current_player.get_move(x, y)
-                        current_player.make_move(x, y)
-                        possible_winner = self._board.check_winning()
-                        if possible_winner is not None or self._board.check_draw():
-                            current_game_winner = possible_winner
-                            quit = True
-                            break
-                        self.change_current_player()
-            self._display_component.display_result(constants.results_draw if current_game_winner is None else current_game_winner)
-            self.clear_board()
-            self.deal_with_menu()
+                elif (event_type == constants.mouse_clicked or self._current_player == 'o') and game_finished == False: #If it's players turn and he made the decision or it's ai's turn
+                    current_player = self.return_player_with_sign(self._current_player)
+                    x, y = current_player.get_move(x, y)
+                    current_player.make_move(x, y)
+                    possible_winner = self._board.check_winning()
+                    if possible_winner is not None or self._board.check_draw():
+                        current_game_winner = possible_winner
+                        game_finished = True
+                        time_start_displaying_result = time.time()
+                    self.change_current_player()
+            if not self._exit:
+                self._display_component.display_result(constants.results_draw if current_game_winner is None else current_game_winner)
+                self.clear_board()
+                self.deal_with_menu()
