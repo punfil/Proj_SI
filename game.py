@@ -23,6 +23,7 @@ class Game:
         self._board = Board(self._board_size)
         for player in self._players:
             player.board = self._board
+        self._current_player = constants.starting_player
 
     def update_ai_player_difficulty(self, new_difficulty):
         self._players[1].level = new_difficulty
@@ -50,21 +51,30 @@ class Game:
         while not self._exit:
             current_game_winner = None
             quit = False
+            # For displaying results
             game_finished = False
             time_start_displaying_result = None
+
+            # For displaying screen before game - prolog
+            game_started = False
+            time_start_game_after_prolog = time.time()
             while not quit:
-                if not game_finished:
+                if not game_finished and game_started:
                     self._display_component.display_board(self._board)
-                else:
+                elif game_finished:
                     self._display_component.display_result(current_game_winner)
                     if time.time()-time_start_displaying_result > constants.results_displaying_time:
                         quit = True
+                elif not game_started:
+                    self._display_component.display_prolog(self._players[0].sign)
+                    if time.time()-time_start_game_after_prolog > constants.prolog_displaying_time:
+                        game_started = True
                 event_type, x, y = self._display_component.get_events()
                 if event_type == constants.menu_exit:
                     self._exit = True
                     quit = True
                     break
-                elif (event_type == constants.mouse_clicked or self._current_player == 'o') and game_finished == False: #If it's players turn and he made the decision or it's ai's turn
+                elif (event_type == constants.mouse_clicked or self._current_player == 'o') and not game_finished and game_started: #If it's players turn and he made the decision or it's ai's turn
                     current_player = self.return_player_with_sign(self._current_player)
                     x, y = current_player.get_move(x, y)
                     current_player.make_move(x, y)

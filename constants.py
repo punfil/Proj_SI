@@ -9,6 +9,7 @@ ai_hard = 3
 board_dimension = 3
 mouse_clicked = 0
 results_displaying_time = 2.0
+prolog_displaying_time = 2.0
 display_font_size = 30
 
 window_height = 600

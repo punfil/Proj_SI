@@ -65,6 +65,13 @@ class DisplayComponent:
         pygame.display.update()
         pygame.display.flip()
 
+    def display_prolog(self, player_sign):
+        self._screen.fill(constants.white_color)
+        text_surface = self._font.render(f"You play as: {player_sign}. Begins: {constants.starting_player}", False, (0, 0, 0))
+        self._screen.blit(text_surface, (0, 0))
+        pygame.display.update()
+        pygame.display.flip()
+
     def get_events(self):
         ev = pygame.event.get()
         for event in ev:
