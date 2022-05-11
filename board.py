@@ -30,7 +30,7 @@ class Board:
         for i in range(self._size):
             if self._board[i][self._size-i-1] != winning_inside or winning_inside is None:
                 break
-            if self._size-i == 0:
+            if i == self._size-1:
                 return winning_inside
 
         # przekatna - lewa gora prawa dol
