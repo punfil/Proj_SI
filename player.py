@@ -4,10 +4,10 @@ class Player:
         self._board = board
 
     def get_move(self, mouse_x, mouse_y):
-            return mouse_x, mouse_y
+        return mouse_x, mouse_y
 
-    def make_move(self, x, y):
-        self._board.make_move(x, y, self._sign)
+    def make_move(self, position):
+        self._board.make_move(position, self._sign)
 
     @property
     def sign(self):

@@ -10,8 +10,8 @@ class AIPlayer(Player):
 
     def return_random_move(self):
         while True:
-            x, y = randint(0, self._board._size - 1), randint(0, self._board._size - 1)
-            if self._board.check_free(x, y):
+            x, y = randint(0, self._board.width - 1), randint(0, self._board.height - 1)
+            if self._board.check_free((x, y)):
                 return x, y
 
     def get_move(self, mouse_x, mouse_y):

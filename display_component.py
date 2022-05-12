@@ -4,6 +4,7 @@ import constants
 import pygame
 
 
+# todo this should have access to game or board, to get dimensions (w, h) and stuff
 class DisplayComponent:
     def __init__(self):
         pygame.init()
@@ -21,12 +22,11 @@ class DisplayComponent:
         self._menu_action_chosen = None
         self._menu_difficulty_chosen = constants.ai_easy
 
-        self._x_sign = pygame.transform.scale(pygame.image.load("x_sign.png"),
-                                              (constants.pile_width, constants.pile_height))
-        self._o_sign = pygame.transform.scale(pygame.image.load("o_sign.jpg"),
-                                              (constants.pile_width, constants.pile_height))
-        self._empty_sign = pygame.transform.scale(pygame.image.load("empty_sign.png"),
-                                              (constants.pile_width, constants.pile_height))
+        self._tile_width = constants.window_width / constants.board_width
+        self._tile_height = constants.window_height / constants.board_height
+        self._x_sign = pygame.transform.scale(pygame.image.load("x_sign.png"), (self._tile_width, self._tile_height))
+        self._o_sign = pygame.transform.scale(pygame.image.load("o_sign.jpg"), (self._tile_width, self._tile_height))
+        self._empty_sign = pygame.transform.scale(pygame.image.load("empty_sign.png"), (self._tile_width, self._tile_height))
 
         pygame.font.init()  # you have to call this at the start,
         # if you want to use this module.
@@ -51,17 +51,17 @@ class DisplayComponent:
 
     def display_result(self, winner):
         self._screen.fill(constants.white_color)
-        text_surface = self._font.render(f"Wins: {winner}.", False, (0,0,0))
+        text_surface = self._font.render(f"Wins: {winner}.", False, (0, 0, 0))
         self._screen.blit(text_surface, (0, 0))
         pygame.display.update()
         pygame.display.flip()
 
     def display_board(self, board):
         self._screen.fill(constants.white_color)
-        for i in range(board.size):
-            for j in range(board.size):
-                self._screen.blit(self._x_sign if board[i][j] == 'x' else (self._o_sign if board[i][j] == 'o' else self._empty_sign),
-                                  (i * constants.pile_width, j * constants.pile_height))
+        for x in range(board.width):
+            for y in range(board.height):
+                self._screen.blit(self._x_sign if board.get_tile((x, y)) == 'x' else (self._o_sign if board.get_tile((x, y)) == 'o' else self._empty_sign),
+                                  (x * self._tile_width, y * self._tile_height))
         pygame.display.update()
         pygame.display.flip()
 
@@ -79,7 +79,7 @@ class DisplayComponent:
                 return constants.menu_exit, None, None
             elif event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                return constants.mouse_clicked, int(pos[0]/constants.pile_width), int(pos[1]/constants.pile_height)
+                return constants.mouse_clicked, int(pos[0]/self._tile_width), int(pos[1]/self._tile_height)
         return None, None, None
 
     def __del__(self):
