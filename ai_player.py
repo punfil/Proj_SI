@@ -1,68 +1,77 @@
 from player import Player
 from copy import deepcopy
-from random import randint
+import random
+
 
 class AIPlayer(Player):
-    def __init__(self, level, sign, board):
-        self._level = level
-        self._change_level = level
-        super().__init__(sign, board)
+    def __init__(self, symbol, game, recursion_depth):
+        super().__init__(symbol, game)
 
-    def return_random_move(self):
-        while True:
-            x, y = randint(0, self._board.width - 1), randint(0, self._board.height - 1)
-            if self._board.check_free((x, y)):
-                return x, y
+        self.recursion_depth = recursion_depth
 
-    def get_move(self, mouse_x, mouse_y):
-        if self._change_level == 1:  # Easy - always random
-            if self._level == 2:
-                self._change_level = 2
-            x, y = self.return_random_move()
-            return x, y
+    def get_move(self):
+        x, y = self.decide()
+        return x, y
 
-        elif self._change_level == 2 or self._level == 3:  # Hard - always AI, Medium - once hard once easy
-            if self._level == 2:
-                self._change_level = 1
-            opponents_sign = 'x'
-            # Try to win in current turn
-            for i in range(0, self._board._size):
-                for j in range(0, self._board._size):
-                    if self._board.check_free(i, j):
-                        copy = deepcopy(self._board)
-                        copy.make_move(i, j, self._sign)
-                        if copy.check_winning() == self._sign:
-                            return i, j
+    def heuristic_function(self, board, active_player_symbol):
+        # kinda works, but mostly doesn't, todo
+        winner = self._game.check_winning(board)
+        if winner:
+            if winner == active_player_symbol:
+                return 10000
+            else:
+                return -10000
+        elif self._game.check_draw(board):
+            return 100
+        else:
+            return 0
 
-            # Check if player can win somewhere - block him!
-            for i in range(0, self._board._size):
-                for j in range(0, self._board._size):
-                    if self._board.check_free(i, j):
-                        copy = deepcopy(self._board)
-                        copy.make_move(i, j, opponents_sign)
-                        if copy.check_winning() == opponents_sign:
-                            return i, j
+    def decide(self):
 
-            # Try to take center
-            if self._board.check_free(1, 1):
-                return 1, 1
-            # Try to take corners
-            if self._board.check_free(0, 2):
-                return 0, 2
-            elif self._board.check_free(0, 0):
-                return 0, 0
-            elif self._board.check_free(2, 0):
-                return 2, 0
-            elif self._board.check_free(2, 2):
-                return 2, 2
-            x, y = self.return_random_move()
-            return x, y
+        moves = self._game.board.get_free_tiles()
+        evals = [-99999 for _ in moves]  # todo
 
-    @property
-    def level(self):
-        return self._level
+        for i in range(len(evals)):
+            new_board = deepcopy(self._game.board)
+            new_board.make_move(moves[i], self._symbol)
+            new_board.draw()
+            evals[i] = self.minmax(new_board, self.recursion_depth - 1, 'o' if self._symbol == 'x' else 'x')
+            print(evals[i], '\n\n\n')
 
-    @level.setter
-    def level(self, new_level):
-        self._level = new_level
-        self._change_level = new_level
+        for i in range(len(evals)):
+            print(moves[i], '~', evals[i])
+
+        best_eval = max(evals)
+
+        new_moves = []
+        for i in range(len(evals)):
+            if evals[i] == best_eval:
+                new_moves.append(moves[i])
+        print('be', best_eval, new_moves)
+
+        best_move = random.choice(new_moves)
+
+        return best_move
+
+    def minmax(self, board, depth, symbol):
+
+        if depth == 0 or self._game.check_winning() or self._game.check_draw():
+            return self.heuristic_function(board, symbol)
+
+        moves = board.get_free_tiles()
+
+        if symbol == self._symbol:  # my turn - maximizing
+            value = -99999
+            for next_move in moves:
+                new_board = deepcopy(board)
+                new_board.make_move(next_move, symbol)
+                value = max(value, self.minmax(new_board, depth - 1, 'x'))  # todo I don't like the hardcoded 'x'
+            return value
+
+        else:  # not my turn - minimizing
+            value = 99999
+            for next_move in moves:
+                new_board = deepcopy(board)
+                new_board.make_move(next_move, symbol)
+                value = min(value, self.minmax(new_board, depth - 1, 'o'))
+            return value

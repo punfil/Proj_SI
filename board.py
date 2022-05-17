@@ -20,7 +20,6 @@ class Board:
 
     def make_move(self, position, player_symbol):
         """places player symbol at specified position, if it was free and within the board bounds"""
-
         x = position[0]
         y = position[1]
         if x > self._width-1 or y > self._height-1 or y < 0 or x < 0:
@@ -31,9 +30,24 @@ class Board:
         else:
             raise ValueError(f"Position {position} is not empty")
 
+    def get_free_tiles(self):
+        """returns a list of all unoccupied tiles"""
+        free_tiles = []
+        for x in range(self._width):
+            for y in range(self._height):
+                if self._board[x][y] is None:
+                    free_tiles.append((x, y))
+        return free_tiles
+
     def check_free(self, position):
         """checks if the given position is occupied"""
         return self.get_tile(position) is None
+
+    def draw(self):  # todo delete this, only for temporary debugging
+        for y in range(self._height):
+            for x in range(self._width):
+                print(self._board[x][y] if self._board[x][y] is not None else '.', end='')
+            print()
 
     @property
     def width(self):
