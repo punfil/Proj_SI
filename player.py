@@ -4,10 +4,10 @@ class Player:
         self._game = game
 
     def get_move(self):
-        return self._game.mouse_position
-
-    def make_move(self, position):
-        self._game.board.make_move(position, self._symbol)
+        raise NotImplementedError()
+    
+    def is_ready(self):
+        raise NotImplementedError()
 
     @property
     def symbol(self):

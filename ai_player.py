@@ -1,45 +1,43 @@
 from player import Player
 from copy import deepcopy
+import sys
 import random
 
 
 class AIPlayer(Player):
-    def __init__(self, symbol, game, recursion_depth):
+    def __init__(self, symbol, game, recursion_depth, heuristic_function):
         super().__init__(symbol, game)
 
-        self.recursion_depth = recursion_depth
+        self._recursion_depth = recursion_depth
+        self._heuristic_function = heuristic_function
 
     def get_move(self):
         x, y = self.decide()
         return x, y
 
+    def is_ready(self):
+        return True
+
     def heuristic_function(self, board, active_player_symbol):
-        # kinda works, but mostly doesn't, todo
-        winner = self._game.check_winning(board)
-        if winner:
-            if winner == active_player_symbol:
-                return 10000
-            else:
-                return -10000
-        elif self._game.check_draw(board):
-            return 100
-        else:
-            return 0
+        return self._heuristic_function(self._game, board, active_player_symbol)
 
     def decide(self):
 
-        moves = self._game.board.get_free_tiles()
-        evals = [-99999 for _ in moves]  # todo
+        moves = self._game.board.get_free_tiles_with_neighbour()
+        if not moves:
+            moves = self._game.board.get_free_tiles()
+
+        evals = [-sys.maxsize for _ in moves]  # todo
 
         for i in range(len(evals)):
             new_board = deepcopy(self._game.board)
             new_board.make_move(moves[i], self._symbol)
-            new_board.draw()
-            evals[i] = self.minmax(new_board, self.recursion_depth - 1, 'o' if self._symbol == 'x' else 'x')
-            print(evals[i], '\n\n\n')
+            # print(moves[i])
+            evals[i] = self.recursive_function(new_board, self._recursion_depth-1, 'o' if self._symbol == 'x' else 'x')
+            # print()
 
-        for i in range(len(evals)):
-            print(moves[i], '~', evals[i])
+        # for i in range(len(evals)):
+        #     print(moves[i], '~', evals[i])
 
         best_eval = max(evals)
 
@@ -47,31 +45,10 @@ class AIPlayer(Player):
         for i in range(len(evals)):
             if evals[i] == best_eval:
                 new_moves.append(moves[i])
-        print('be', best_eval, new_moves)
 
         best_move = random.choice(new_moves)
 
         return best_move
 
-    def minmax(self, board, depth, symbol):
-
-        if depth == 0 or self._game.check_winning() or self._game.check_draw():
-            return self.heuristic_function(board, symbol)
-
-        moves = board.get_free_tiles()
-
-        if symbol == self._symbol:  # my turn - maximizing
-            value = -99999
-            for next_move in moves:
-                new_board = deepcopy(board)
-                new_board.make_move(next_move, symbol)
-                value = max(value, self.minmax(new_board, depth - 1, 'x'))  # todo I don't like the hardcoded 'x'
-            return value
-
-        else:  # not my turn - minimizing
-            value = 99999
-            for next_move in moves:
-                new_board = deepcopy(board)
-                new_board.make_move(next_move, symbol)
-                value = min(value, self.minmax(new_board, depth - 1, 'o'))
-            return value
+    def recursive_function(self, board, depth, symbol):
+        raise NotImplementedError()

@@ -39,9 +39,49 @@ class Board:
                     free_tiles.append((x, y))
         return free_tiles
 
+    def get_free_tiles_with_neighbour(self):
+        """returns a list of all unoccupied tiles that have an occupied neighbour tile"""
+        # todo I don't think this gives any faster results than normal get_tiles
+        output = []
+        for x, y in self.get_free_tiles():
+            stop = False
+            for x_offset in (-1, 0, 1):
+                if stop:
+                    break
+                for y_offset in (-1, 0, 1):
+                    if stop:
+                        break
+                    try:
+                        if not self.check_free((x+x_offset, y+y_offset)):
+                            output.append((x, y))
+                            stop = True
+                    except ValueError:
+                        pass
+
+        return output
+
     def check_free(self, position):
         """checks if the given position is occupied"""
         return self.get_tile(position) is None
+
+    def iter_lines(self, line_length):
+        """returns all lines (diagonal, vertical, horizontal) of given length"""
+
+        # horizontal
+        for n_row in range(self.height):
+            for start_column in range(self.width - line_length+1):
+                yield self._board[n_row][start_column:start_column + line_length]
+
+        # vertical
+        for n_column in range(self.width):
+            for start_row in range(self.height - line_length+1):
+                yield [self._board[n_row][n_column] for n_row in range(start_row, start_row + line_length)]
+
+        # diagonal
+        for n_row in range(self.height - line_length+1):
+            for n_column in range(self.width - line_length+1):
+                yield [self._board[n_row + i][n_column + i] for i in range(line_length)]  # decreasing
+                yield [self._board[n_row + i][self.width - 1 - n_column - i] for i in range(line_length)]  # increasing
 
     def draw(self):  # todo delete this, only for temporary debugging
         for y in range(self._height):

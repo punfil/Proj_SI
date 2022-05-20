@@ -1,42 +1,52 @@
-from player import Player
-from ai_player import AIPlayer
 from board import Board
-from display_component import DisplayComponent
+from interface import Interface
+from ai_player import AIPlayer
+import heuristics
 import constants
 import time
+import random
 
 
 class Game:
     def __init__(self, board_width=constants.board_width, board_height=constants.board_height):
         self._board = Board(board_width, board_height)
 
-        self._players = [Player('x', self), AIPlayer('o', self, 2)]
-        self._current_player = constants.starting_player
+        self._players = []
 
-        self._display_component = DisplayComponent(self)
-        self._exit = False
+        self._interface = Interface(self)
 
-        self._mouse_x = None
-        self._mouse_y = None
+        self._click_x = None
+        self._click_y = None
 
-    def restart(self):
-        """restarts the game"""
-        self._board.clear()
-        self._current_player = constants.starting_player
+    def menu(self):
+        """displays the menu"""
+        self._interface.display_menu()
 
-    def change_current_player(self):
-        if self._current_player == 'x':
-            self._current_player = 'o'
-        else:
-            self._current_player = 'x'
+    def set_players(self, player_types):
+        """sets the player list to players of the types (classes) given in player_types"""
+        self._players = []
+        for index, player_type in enumerate(player_types):
+            if issubclass(player_type, AIPlayer):
+                player = player_type(constants.symbols[index], self,
+                                     constants.ai_recursion_depth, heuristics.line_length)
+            else:
+                player = player_type(constants.symbols[index], self)
+            self._players.append(player)
 
-    def return_player_with_symbol(self, symbol):
-        if self._players[0].symbol == symbol:
-            return self._players[0]
-        return self._players[1]
+    def get_next_symbol(self, current_symbol):
+        """returns the symbol of the next player, assuming the current player's symbol is current_symbol"""
+        index = constants.symbols.index(current_symbol)
+        return constants.symbols[(index + 1) % len(constants.symbols)]
+
+    def get_previous_symbol(self, current_symbol):
+        """returns the symbol of the previous player, assuming the current player's symbol is current_symbol"""
+        index = constants.symbols.index(current_symbol)
+        return constants.symbols[(index - 1) % len(constants.symbols)]
 
     def check_winning(self, board=None):
-
+        """checks if there is a winning player on a given board. If no board was given, uses the current game board.
+        Returns the winner's symbol, or None if there is no winner
+        """
         if board is None:
             board = self._board
 
@@ -48,7 +58,7 @@ class Game:
                 if board.get_tile((x, y)) == current_symbol:
                     line_length += 1
                     if line_length >= constants.required_line_length and current_symbol is not None:
-                        print("---HORIZONTAL VICTORY---", current_symbol)
+                        # print("---HORIZONTAL VICTORY---", current_symbol)
                         return current_symbol
                 else:
                     line_length = 1
@@ -62,7 +72,7 @@ class Game:
                 if board.get_tile((x, y)) == current_symbol:
                     line_length += 1
                     if line_length >= constants.required_line_length and current_symbol is not None:
-                        print("|||VERTICAL VICTORY|||", current_symbol)
+                        # print("|||VERTICAL VICTORY|||", current_symbol)
                         return current_symbol
                 else:
                     line_length = 1
@@ -80,7 +90,7 @@ class Game:
                 if board.get_tile((x, y)) == current_symbol:
                     line_length += 1
                     if line_length >= constants.required_line_length and current_symbol is not None:
-                        print("///DIAGONAL VICTORY///", current_symbol)
+                        # print("///DIAGONAL VICTORY///", current_symbol)
                         return current_symbol
                 else:
                     line_length = 1
@@ -98,7 +108,7 @@ class Game:
                 if board.get_tile((x, y)) == current_symbol:
                     line_length += 1
                     if line_length >= constants.required_line_length and current_symbol is not None:
-                        print("\\\\\\DIAGONAL VICTORY\\\\\\", current_symbol)
+                        # print("\\\\\\DIAGONAL VICTORY\\\\\\", current_symbol)
                         return current_symbol
                 else:
                     line_length = 1
@@ -107,6 +117,9 @@ class Game:
         return None
 
     def check_draw(self, board=None):
+        """checks if there is a draw on a given board. If no board was given, uses the current game board.
+        Returns True if there is a draw, and False otherwise
+        """
         if board is None:
             board = self._board
 
@@ -117,56 +130,46 @@ class Game:
         return True
 
     def play(self):
-        while not self._exit:
-            current_game_winner = None
-            stop = False
+        """runs the game"""
+        self._board.clear()
 
-            # For displaying results
-            game_finished = False
-            time_start_displaying_result = None
+        # current_player_index = random.randint(0, 1)
+        current_player_index = 0
+        game_running = True
+        start_time = time.time()
 
-            # For displaying screen before game - prolog
-            game_started = False
-            time_start_game_after_prolog = time.time()
+        while game_running:
+            self._interface.display_board(self._board)
 
-            while not stop:
-                if not game_finished and game_started:
-                    self._display_component.display_board(self._board)
-                elif game_finished:
-                    self._display_component.display_result(current_game_winner)
-                    if time.time()-time_start_displaying_result > constants.results_displaying_time:
-                        stop = True
-                elif not game_started:
-                    self._display_component.display_prolog(self._players[0].symbol)
-                    if time.time()-time_start_game_after_prolog > constants.prolog_displaying_time:
-                        game_started = True
+            current_player = self._players[current_player_index]
+            current_player_index = (current_player_index + 1) % len(self._players)
 
-                event_type, self._mouse_x, self._mouse_y = self._display_component.get_events()
+            self._click_x = None
+            self._click_y = None
+            self._interface.get_events()  # without this line the window freezes in long AI vs AI games
+            while not current_player.is_ready():
+                event_type, mouse_x,  mouse_y = self._interface.get_events()
                 if event_type == constants.menu_exit:
-                    self._exit = True
-                    stop = True
+                    game_running = False
                     break
-                elif (event_type == constants.mouse_clicked or self._current_player == 'o') and not game_finished and game_started: #If it's players turn and he made the decision or it's ai's turn
-                    current_player = self.return_player_with_symbol(self._current_player)  # pycharm says this doesn't return anything, todo
-                    print("game getting move")
-                    x, y = current_player.get_move()
-                    print("game making move")
-                    current_player.make_move((x, y))
-                    possible_winner = self.check_winning()
-                    if possible_winner is not None or self.check_draw():
-                        current_game_winner = possible_winner
-                        game_finished = True
-                        time_start_displaying_result = time.time()
-                    self.change_current_player()
+                elif event_type == constants.mouse_clicked:
+                    self._click_x = mouse_x
+                    self._click_y = mouse_y
 
-            if not self._exit:
-                self._display_component.display_result(constants.results_draw if current_game_winner is None else current_game_winner)
-                self.restart()
+            x, y = current_player.get_move()
+            self._board.make_move((x, y), current_player.symbol)
+
+            winner = self.check_winning()
+            if winner or self.check_draw():
+                game_running = False
+                print("winner:", winner)
+                print("game lasted", time.time()-start_time, "\n")
+                self._interface.display_result(winner)
 
     @property
     def board(self):
         return self._board
 
     @property
-    def mouse_position(self):
-        return self._mouse_x, self._mouse_y
+    def click_position(self):
+        return self._click_x, self._click_y
