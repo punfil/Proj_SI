@@ -19,7 +19,7 @@ class AIPlayer(Player):
         return True
 
     def heuristic_function(self, board, active_player_symbol):
-        return self._heuristic_function(self._game, board, active_player_symbol)
+        return self._heuristic_function(board, active_player_symbol)
 
     def decide(self):
 
@@ -52,3 +52,11 @@ class AIPlayer(Player):
 
     def recursive_function(self, board, depth, symbol):
         raise NotImplementedError()
+
+    @property
+    def recursion_depth(self):
+        return self._recursion_depth
+
+    @recursion_depth.setter
+    def recursion_depth(self, value):
+        self._recursion_depth = value

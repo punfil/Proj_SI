@@ -24,12 +24,12 @@ symbols_images = {
     None: "images/empty.png"
 }
 
-board_width = 5
-board_height = 5
+board_width = 8
+board_height = 8
 
 window_height = 800
 window_width = 800
 
 white_color = (255, 255, 255)
 
-required_line_length = 4  # how many symbols in a row are needed to win the game
+required_line_length = 5  # how many symbols in a row are needed to win the game

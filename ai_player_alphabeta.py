@@ -8,7 +8,7 @@ class AIPlayerAlphaBeta(AIPlayer):
         return self.alphabeta(board, depth, symbol)
 
     def alphabeta(self, board, depth, symbol, alpha=-sys.maxsize, beta=sys.maxsize):
-        if depth == 0 or self._game.check_winning(board) or self._game.check_draw(board):
+        if depth == 0 or board.get_winner() or board.check_draw():
             prev_symbol = self._game.get_previous_symbol(symbol)
             # previous symbol is needed because the last call of this function has changed the symbol,
             # but we are calculating heuristics for the same board (without making another move with the changed symbol)

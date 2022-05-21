@@ -1,4 +1,4 @@
-from board import Board
+from fast_board import FastBoard
 from interface import Interface
 from ai_player import AIPlayer
 import heuristics
@@ -9,7 +9,7 @@ import random
 
 class Game:
     def __init__(self, board_width=constants.board_width, board_height=constants.board_height):
-        self._board = Board(board_width, board_height)
+        self._board = FastBoard(board_width, board_height)
 
         self._players = []
 
@@ -43,92 +43,6 @@ class Game:
         index = constants.symbols.index(current_symbol)
         return constants.symbols[(index - 1) % len(constants.symbols)]
 
-    def check_winning(self, board=None):
-        """checks if there is a winning player on a given board. If no board was given, uses the current game board.
-        Returns the winner's symbol, or None if there is no winner
-        """
-        if board is None:
-            board = self._board
-
-        # --- horizontal ---
-        for y in range(board.height):
-            line_length = 0
-            current_symbol = None
-            for x in range(board.width):
-                if board.get_tile((x, y)) == current_symbol:
-                    line_length += 1
-                    if line_length >= constants.required_line_length and current_symbol is not None:
-                        # print("---HORIZONTAL VICTORY---", current_symbol)
-                        return current_symbol
-                else:
-                    line_length = 1
-                    current_symbol = board.get_tile((x, y))
-
-        # ||| vertical |||
-        for x in range(board.width):
-            line_length = 0
-            current_symbol = None
-            for y in range(board.height):
-                if board.get_tile((x, y)) == current_symbol:
-                    line_length += 1
-                    if line_length >= constants.required_line_length and current_symbol is not None:
-                        # print("|||VERTICAL VICTORY|||", current_symbol)
-                        return current_symbol
-                else:
-                    line_length = 1
-                    current_symbol = board.get_tile((x, y))
-
-        # /// diagonal ///
-        for diagonal in range(board.width + board.height):
-            line_length = 0
-            current_symbol = None
-
-            start_x = 0 if diagonal < board.width else diagonal - board.width + 1
-            end_x = diagonal if diagonal < board.height else board.height - 1
-            for x in range(start_x, end_x+1):
-                y = diagonal - x
-                if board.get_tile((x, y)) == current_symbol:
-                    line_length += 1
-                    if line_length >= constants.required_line_length and current_symbol is not None:
-                        # print("///DIAGONAL VICTORY///", current_symbol)
-                        return current_symbol
-                else:
-                    line_length = 1
-                    current_symbol = board.get_tile((x, y))
-
-        # \\\ diagonal \\\
-        for diagonal in range(board.width + board.height):
-            line_length = 0
-            current_symbol = None
-
-            start_x = 0 if diagonal < board.width else diagonal - board.width + 1
-            end_x = diagonal if diagonal < board.height else board.height - 1
-            for x in range(start_x, end_x + 1):
-                y = board.height - (diagonal - x) - 1
-                if board.get_tile((x, y)) == current_symbol:
-                    line_length += 1
-                    if line_length >= constants.required_line_length and current_symbol is not None:
-                        # print("\\\\\\DIAGONAL VICTORY\\\\\\", current_symbol)
-                        return current_symbol
-                else:
-                    line_length = 1
-                    current_symbol = board.get_tile((x, y))
-
-        return None
-
-    def check_draw(self, board=None):
-        """checks if there is a draw on a given board. If no board was given, uses the current game board.
-        Returns True if there is a draw, and False otherwise
-        """
-        if board is None:
-            board = self._board
-
-        for x in range(board.width):
-            for y in range(board.height):
-                if board.get_tile((x, y)) is None:
-                    return False
-        return True
-
     def play(self):
         """runs the game"""
         self._board.clear()
@@ -159,8 +73,8 @@ class Game:
             x, y = current_player.get_move()
             self._board.make_move((x, y), current_player.symbol)
 
-            winner = self.check_winning()
-            if winner or self.check_draw():
+            winner = self._board.get_winner()
+            if winner or self._board.check_draw():
                 game_running = False
                 print("winner:", winner)
                 print("game lasted", time.time()-start_time, "\n")

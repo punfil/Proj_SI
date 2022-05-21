@@ -1,3 +1,6 @@
+import constants
+
+
 class Board:
     def __init__(self, width, height):
         self._width = width
@@ -63,6 +66,84 @@ class Board:
     def check_free(self, position):
         """checks if the given position is occupied"""
         return self.get_tile(position) is None
+
+    def get_winner(self):
+        """checks if there is a winning player on a given board. If no board was given, uses the current game board.
+        Returns the winner's symbol, or None if there is no winner
+        """
+
+        # --- horizontal ---
+        for y in range(self._height):
+            line_length = 0
+            current_symbol = None
+            for x in range(self._width):
+                if self.get_tile((x, y)) == current_symbol:
+                    line_length += 1
+                    if line_length >= constants.required_line_length and current_symbol is not None:
+                        # print("---HORIZONTAL VICTORY---", current_symbol)
+                        return current_symbol
+                else:
+                    line_length = 1
+                    current_symbol = self.get_tile((x, y))
+
+        # ||| vertical |||
+        for x in range(self._width):
+            line_length = 0
+            current_symbol = None
+            for y in range(self._height):
+                if self.get_tile((x, y)) == current_symbol:
+                    line_length += 1
+                    if line_length >= constants.required_line_length and current_symbol is not None:
+                        # print("|||VERTICAL VICTORY|||", current_symbol)
+                        return current_symbol
+                else:
+                    line_length = 1
+                    current_symbol = self.get_tile((x, y))
+
+        # /// diagonal ///
+        for diagonal in range(self._width + self._height):
+            line_length = 0
+            current_symbol = None
+
+            start_x = 0 if diagonal < self._width else diagonal - self._width + 1
+            end_x = diagonal if diagonal < self._height else self._height - 1
+            for x in range(start_x, end_x + 1):
+                y = diagonal - x
+                if self.get_tile((x, y)) == current_symbol:
+                    line_length += 1
+                    if line_length >= constants.required_line_length and current_symbol is not None:
+                        # print("///DIAGONAL VICTORY///", current_symbol)
+                        return current_symbol
+                else:
+                    line_length = 1
+                    current_symbol = self.get_tile((x, y))
+
+        # \\\ diagonal \\\
+        for diagonal in range(self._width + self._height):
+            line_length = 0
+            current_symbol = None
+
+            start_x = 0 if diagonal < self._width else diagonal - self._width + 1
+            end_x = diagonal if diagonal < self._height else self._height - 1
+            for x in range(start_x, end_x + 1):
+                y = self._height - (diagonal - x) - 1
+                if self.get_tile((x, y)) == current_symbol:
+                    line_length += 1
+                    if line_length >= constants.required_line_length and current_symbol is not None:
+                        # print("\\\\\\DIAGONAL VICTORY\\\\\\", current_symbol)
+                        return current_symbol
+                else:
+                    line_length = 1
+                    current_symbol = self.get_tile((x, y))
+
+        return None
+
+    def check_draw(self):
+        """returns True if there are no available moves and there is no winner and False otherwise"""
+        if not self.get_free_tiles():
+            if self.get_winner() is not None:
+                return True
+        return False
 
     def iter_lines(self, line_length):
         """returns all lines (diagonal, vertical, horizontal) of given length"""
