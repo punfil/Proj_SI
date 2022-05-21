@@ -26,8 +26,8 @@ class Interface:
         self._menu = pygame_menu.Menu("Tic Tac Toe", constants.window_width, constants.window_height,
                                       theme=pygame_menu.themes.THEME_DARK)
 
-        player_selector_list = [('MinMax AI', "MinMax"),
-                                ('AlphaBeta AI', "AlphaBeta"),
+        player_selector_list = [('AlphaBeta AI', "AlphaBeta"),
+                                ('MinMax AI', "MinMax"),
                                 ('Random AI', "Random"),
                                 ('Human', "Human")]
         self._menu.add.selector('Player 1: ', player_selector_list,
@@ -43,6 +43,8 @@ class Interface:
         pygame.font.init()  # you have to call this at the start,
         # if you want to use this module.
         self._font = pygame.font.SysFont('Comic Sans MS', constants.display_font_size)
+
+        self._clock = pygame.time.Clock()
 
     def display_menu(self):
         """enables and displays the menu"""
@@ -91,6 +93,10 @@ class Interface:
             elif event.type == pygame.MOUSEBUTTONUP:
                 mouse_pos = pygame.mouse.get_pos()
                 return constants.mouse_clicked, int(mouse_pos[0]/self._tile_width), int(mouse_pos[1]/self._tile_height)
+
+        self._clock.tick(30)
+        pygame.display.update()
+        pygame.display.flip()
         return None, None, None
 
     def __del__(self):
