@@ -63,6 +63,15 @@ class Board:
 
         return output
 
+    def get_occupied_tiles(self):
+        """returns a list of all occupied tiles"""
+        occupied_tiles = []
+        for x in range(self._width):
+            for y in range(self._height):
+                if self._board[x][y] is not None:
+                    occupied_tiles.append((x, y))
+        return occupied_tiles
+
     def check_free(self, position):
         """checks if the given position is occupied"""
         return self.get_tile(position) is None
@@ -140,9 +149,8 @@ class Board:
 
     def check_draw(self):
         """returns True if there are no available moves and there is no winner and False otherwise"""
-        if not self.get_free_tiles():
-            if self.get_winner() is not None:
-                return True
+        if not self.get_free_tiles() and self.get_winner() is None:
+            return True
         return False
 
     def iter_lines(self, line_length):

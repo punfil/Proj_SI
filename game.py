@@ -28,7 +28,7 @@ class Game:
         for index, player_type in enumerate(player_types):
             if issubclass(player_type, AIPlayer):
                 player = player_type(constants.symbols[index], self,
-                                     constants.ai_recursion_depth, heuristics.line_length)
+                                     constants.ai_recursion_depth, heuristics.line_length_turn_number)
             else:
                 player = player_type(constants.symbols[index], self)
             self._players.append(player)

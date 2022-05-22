@@ -33,7 +33,8 @@ class AIPlayer(Player):
             new_board = deepcopy(self._game.board)
             new_board.make_move(moves[i], self._symbol)
             # print(moves[i])
-            evals[i] = self.recursive_function(new_board, self._recursion_depth-1, 'o' if self._symbol == 'x' else 'x')
+            evals[i] = self.recursive_function(new_board, self._recursion_depth - 1,
+                                               self._game.get_next_symbol(self._symbol))
             # print()
 
         # for i in range(len(evals)):

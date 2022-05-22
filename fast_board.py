@@ -9,10 +9,12 @@ class FastBoard(Board):
         self._winner = None
         self._free_tiles = {(x, y) for x in range(self._width) for y in range(self._height)}
         self._free_tiles_with_neighbour = set()
+        self._occupied_tiles = set()
 
     def make_move(self, position, player_symbol):
         super().make_move(position, player_symbol)
         self.update_winner(position)
+        self._occupied_tiles.add(position)
         self._free_tiles.discard(position)
         self._free_tiles_with_neighbour.discard(position)
         if len(self._free_tiles) != len(self._free_tiles_with_neighbour):
@@ -25,12 +27,17 @@ class FastBoard(Board):
         super().clear()
         self._winner = None
         self._free_tiles = {(x, y) for x in range(self._width) for y in range(self._height)}
+        self._free_tiles_with_neighbour = set()
+        self._occupied_tiles = set()
 
     def get_free_tiles(self):
         return list(self._free_tiles)  # todo maybe remove casting to list (not that important) (requires changes in AI)
 
     def get_free_tiles_with_neighbour(self):
         return list(self._free_tiles_with_neighbour)
+
+    def get_occupied_tiles(self):
+        return list(self._occupied_tiles)
 
     def update_winner(self, position):
         """updates the self._winner variable if the provided position is part of the winning line"""
