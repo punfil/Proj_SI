@@ -1,6 +1,7 @@
 from fast_board import FastBoard
 from interface import Interface
 from ai_player import AIPlayer
+from ai_player_neat import AIPlayerNEAT
 import heuristics
 import constants
 import time
@@ -28,11 +29,22 @@ class Game:
         """sets the player list to players of the types (classes) given in player_types"""
         self._players = []
         for index, player_type in enumerate(player_types):
-            if issubclass(player_type, AIPlayer):
-                player = player_type(constants.symbols[index], self,
+            symbol = constants.symbols[index]
+            if issubclass(player_type, AIPlayerNEAT):
+                with open("best.pickle", "rb") as file:
+                    genome = pickle.load(file)
+                config_path = "./config.txt"
+                config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                            neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+                net = neat.nn.FeedForwardNetwork.create(genome, config)
+
+
+                player = AIPlayerNEAT(symbol, self, net)
+            elif issubclass(player_type, AIPlayer):
+                player = player_type(symbol, self,
                                      constants.ai_recursion_depth, heuristics.line_length_turn_number)
             else:
-                player = player_type(constants.symbols[index], self)
+                player = player_type(symbol, self)
             self._players.append(player)
 
     def get_next_symbol(self, current_symbol):
@@ -86,7 +98,6 @@ class Game:
         """for every genome in initial_genomes, plays the game with NN created from that genome against a random AI
         Assigns fitness scores depending on results and length of the game.
         """
-        # todo play a few games for each player, to reduce chance of winning by pure luck
         nets = []
         genomes = []
         players = []
@@ -100,40 +111,44 @@ class Game:
             genomes.append(genome)
 
         self._players = [None, None]
+        num_games = 2  # how many games a single player plays before being assigned a final fitness
 
         for i, player in enumerate(players):
-            self._board.clear()
+            for j in range(num_games):
+                self._board.clear()
 
-            self._players[0] = player
-            self._players[1] = constants.player_types["Random"]('o', self)
+                self._players[0] = player
+                self._players[1] = constants.player_types["Random"]('o', self)
 
-            # current_player_index = random.randint(0, 1)
-            current_player_index = 0
-            game_running = True
-            start_time = time.time()
+                # current_player_index = random.randint(0, 1)
+                current_player_index = 0
+                game_running = True
+                start_time = time.time()
 
-            while game_running:
-                genomes[i].fitness -= 1
-                #self._interface.display_board(self._board)
+                while game_running:
+                    genomes[i].fitness -= 1
+                    #self._interface.display_board(self._board)
 
-                current_player = self._players[current_player_index]
-                current_player_index = (current_player_index + 1) % len(self._players)
+                    current_player = self._players[current_player_index]
+                    current_player_index = (current_player_index + 1) % len(self._players)
 
-                x, y = current_player.get_move()
-                self._board.make_move((x, y), current_player.symbol)
+                    x, y = current_player.get_move()
+                    self._board.make_move((x, y), current_player.symbol)
 
-                winner = self._board.get_winner()
-                if winner == 'x':
-                    genomes[i].fitness += 100
-                elif winner == 'o':
-                    genomes[i].fitness -= 100
+                    winner = self._board.get_winner()
+                    if winner == 'x':
+                        genomes[i].fitness += 100
+                    elif winner == 'o':
+                        genomes[i].fitness -= 100
 
-                if winner or self._board.check_draw():
-                    game_running = False
-                    print(f"game {i} finished")
-                    print("winner:", winner)
-                    print("game lasted", time.time() - start_time)
-                    print(f"fitness: {genomes[i].fitness}\n")
+                    if winner or self._board.check_draw():
+                        game_running = False
+                        print(f"game {i}-{j} finished")
+                        print("winner:", winner)
+                        print("game lasted", time.time() - start_time)
+                        print(f"fitness: {genomes[i].fitness}\n")
+            genomes[i].fitness /= num_games
+            print(f"final fitness: {genomes[i].fitness}\n\n")
 
     def train_start(self):
         config_path = "./config.txt"

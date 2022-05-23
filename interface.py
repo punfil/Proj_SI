@@ -26,10 +26,11 @@ class Interface:
         self._menu = pygame_menu.Menu("Tic Tac Toe", constants.window_width, constants.window_height,
                                       theme=pygame_menu.themes.THEME_DARK)
 
-        player_selector_list = [('AlphaBeta AI', "AlphaBeta"),
-                                ('MinMax AI', "MinMax"),
-                                ('Random AI', "Random"),
-                                ('Human', "Human")]
+        player_selector_list = [("AlphaBeta AI", "AlphaBeta"),
+                                ("MinMax AI", "MinMax"),
+                                ("Random AI", "Random"),
+                                ("Human", "Human"),
+                                ("NEAT AI", "NEAT")]
         self._menu.add.selector('Player 1: ', player_selector_list,
                                 onchange=lambda _, player: self.set_player(0, constants.player_types[player]))
         self._menu.add.selector('Player 2: ', player_selector_list,
