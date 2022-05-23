@@ -38,6 +38,7 @@ class Interface:
         self.set_player(1, constants.player_types[player_selector_list[0][1]])
 
         self._menu.add.button('Play', self.play)
+        self._menu.add.button('(TMP) Train AI', self._game.train_start)
         self._menu.add.button('Quit', self._menu.disable)
 
         pygame.font.init()  # you have to call this at the start,

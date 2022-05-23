@@ -2,6 +2,7 @@ from human_player import HumanPlayer
 from ai_player_random import AIPlayerRandom
 from ai_player_minmax import AIPlayerMinMax
 from ai_player_alphabeta import AIPlayerAlphaBeta
+from ai_player_neat import AIPlayerNEAT
 
 menu_play_game = 0
 menu_exit = 1
@@ -14,7 +15,8 @@ player_types = {
     "Human": HumanPlayer,
     "Random": AIPlayerRandom,
     "MinMax": AIPlayerMinMax,
-    "AlphaBeta": AIPlayerAlphaBeta
+    "AlphaBeta": AIPlayerAlphaBeta,
+    "NEAT": AIPlayerNEAT
 }
 
 symbols = ['x', 'o']

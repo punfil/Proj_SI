@@ -18,9 +18,7 @@ class AIPlayerAlphaBeta(AIPlayer):
             else:
                 return -score
 
-        moves = board.get_free_tiles_with_neighbour()
-        if not moves:
-            moves = board.get_free_tiles()
+        moves = self.get_possible_moves(board)
 
         if symbol == self._symbol:  # my turn - maximizing
             value = -sys.maxsize

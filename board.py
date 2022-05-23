@@ -1,4 +1,5 @@
 import constants
+import numpy as np
 
 
 class Board:
@@ -171,6 +172,23 @@ class Board:
             for n_column in range(self.width - line_length+1):
                 yield [self._board[n_row + i][n_column + i] for i in range(line_length)]  # decreasing
                 yield [self._board[n_row + i][self.width - 1 - n_column - i] for i in range(line_length)]  # increasing
+
+    def to_array(self, player_symbol):
+        """returns a one-dimensional array representation of the board.
+        Empty tiles have a value of 0, tiles with player_symbol have a value of 1 and all other tiles have a value of -1
+        """
+        arr = np.ndarray(self._width * self._height, dtype=np.int8)
+        i = 0
+        for y in range(self._height):
+            for x in range(self._width):
+                if self._board[x][y] is None:
+                    arr[i] = 0
+                elif self._board[x][y] == player_symbol:
+                    arr[i] = 1
+                else:
+                    arr[i] = -1
+                i += 1
+        return arr
 
     def draw(self):  # todo delete this, only for temporary debugging
         for y in range(self._height):

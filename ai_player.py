@@ -21,13 +21,15 @@ class AIPlayer(Player):
     def heuristic_function(self, board, active_player_symbol):
         return self._heuristic_function(board, active_player_symbol)
 
-    def decide(self):
-
-        moves = self._game.board.get_free_tiles_with_neighbour()
+    def get_possible_moves(self, board):
+        moves = board.get_free_tiles_with_neighbour()
         if not moves:
-            moves = self._game.board.get_free_tiles()
+            moves = board.get_free_tiles()
+        return moves
 
-        evals = [-sys.maxsize for _ in moves]  # todo
+    def decide(self):
+        moves = self.get_possible_moves(self._game.board)
+        evals = [-sys.maxsize for _ in moves]
 
         for i in range(len(evals)):
             new_board = deepcopy(self._game.board)
