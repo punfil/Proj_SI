@@ -3,6 +3,7 @@ from ai_player_random import AIPlayerRandom
 from ai_player_minmax import AIPlayerMinMax
 from ai_player_alphabeta import AIPlayerAlphaBeta
 from ai_player_neat import AIPlayerNEAT
+from ai_player_keras import AIPlayerKERAS
 
 menu_play_game = 0
 menu_exit = 1
@@ -16,7 +17,8 @@ player_types = {
     "Random": AIPlayerRandom,
     "MinMax": AIPlayerMinMax,
     "AlphaBeta": AIPlayerAlphaBeta,
-    "NEAT": AIPlayerNEAT
+    #"NEAT": AIPlayerNEAT,
+    "KERAS": AIPlayerKERAS
 }
 
 symbols = ['x', 'o']
@@ -26,12 +28,12 @@ symbols_images = {
     None: "images/empty.png"
 }
 
-board_width = 8
-board_height = 8
+board_width = 3
+board_height = 3
 
 window_height = 800
 window_width = 800
 
 white_color = (255, 255, 255)
 
-required_line_length = 5  # how many symbols in a row are needed to win the game
+required_line_length = 3  # how many symbols in a row are needed to win the game

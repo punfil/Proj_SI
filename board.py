@@ -204,5 +204,9 @@ class Board:
     def height(self):
         return self._height
 
+    @property
+    def board(self):
+        return self._board
+
     def __getitem__(self, item):
         return self._board[item]

@@ -30,16 +30,20 @@ class Interface:
                                 ("MinMax AI", "MinMax"),
                                 ("Random AI", "Random"),
                                 ("Human", "Human"),
-                                ("NEAT AI", "NEAT")]
+                                ("KERAS", "KERAS")]
         self._menu.add.selector('Player 1: ', player_selector_list,
                                 onchange=lambda _, player: self.set_player(0, constants.player_types[player]))
         self._menu.add.selector('Player 2: ', player_selector_list,
                                 onchange=lambda _, player: self.set_player(1, constants.player_types[player]))
         self.set_player(0, constants.player_types[player_selector_list[0][1]])
         self.set_player(1, constants.player_types[player_selector_list[0][1]])
-
+        s = "dwd"
+        i = 12
         self._menu.add.button('Play', self.play)
-        self._menu.add.button('(TMP) Train AI', self._game.train_start)
+        self._menu.add.button('Train AI', self._game.train_start)
+        self._menu.add.button('Save model', self._game.save_model)
+        self._menu.add.button('Load model', self._game.load_model)
+        self._menu.add.button('Load best model (3x3)', self._game.load_bigdata_model)
         self._menu.add.button('Quit', self._menu.disable)
 
         pygame.font.init()  # you have to call this at the start,
