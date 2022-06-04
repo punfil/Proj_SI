@@ -41,7 +41,7 @@ class TicTacToeModel:
         return self.model.predict(np.array(data).reshape(-1, self.numberOfInputs))[0][index]
 
     def save(self):
-        """To save new model (previous is overwritten!!!)"""
+        """Save new model (previous is overwritten!!!)"""
         self.model.save_weights('./checkpoints/my_checkpoint')
         print("SAVED MODEL")
     def load(self):
@@ -49,12 +49,12 @@ class TicTacToeModel:
         self.model.load_weights('./checkpoints/my_checkpoint')
         print("LOADED MODEL")
 
-    def save_bigdata(self):
+    def save_best(self):
         """To save best model"""
-        self.model.save_weights('./checkpoints/bigdata_checkpoint')
-        print("SAVED BIG MODEL")
+        self.model.save_weights('./checkpoints/best_checkpoint')
+        print("SAVED BEST")
 
-    def load_bigdata(self):
+    def load_best(self):
         """To load actual the best model"""
-        self.model.load_weights('./checkpoints/bigdata_checkpoint')
-        print("LOADED MODEL")
+        self.model.load_weights('./checkpoints/best_checkpoint')
+        print("LOADED BEST")

@@ -79,7 +79,7 @@ class AIPlayerKERAS(Player):
                 value = self._game.model.predict(boardCopy, 0)
                 value2 = self._game.model.predict(boardCopy, 2)
                 value1 = self._game.model.predict(boardCopy, 1)
-            if value < minValue:
+            if value <= minValue:
                 minValue = value
                 bestMove = availableMove
             val_list.append((value,availableMove))

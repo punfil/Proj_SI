@@ -42,8 +42,9 @@ class Interface:
         self._menu.add.button('Play', self.play)
         self._menu.add.button('Train AI', self._game.train_start)
         self._menu.add.button('Save model', self._game.save_model)
+        #self._menu.add.button('Save best model', self._game.save_best_model)
         self._menu.add.button('Load model', self._game.load_model)
-        self._menu.add.button('Load best model (3x3)', self._game.load_bigdata_model)
+        self._menu.add.button('Load best model (3x3)', self._game.load_best_model)
         self._menu.add.button('Quit', self._menu.disable)
 
         pygame.font.init()  # you have to call this at the start,
