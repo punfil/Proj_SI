@@ -2,6 +2,7 @@ import pygame
 import pygame_menu
 import constants
 import time
+import neural_networks
 
 
 class Interface:
@@ -30,21 +31,28 @@ class Interface:
                                 ("MinMax AI", "MinMax"),
                                 ("Random AI", "Random"),
                                 ("Human", "Human"),
-                                ("KERAS", "KERAS")]
+                                ("NEAT AI", "NEAT"),
+                                ("Keras AI", "Keras"),
+                                ("Neural AI", "Neural")]
         self._menu.add.selector('Player 1: ', player_selector_list,
                                 onchange=lambda _, player: self.set_player(0, constants.player_types[player]))
         self._menu.add.selector('Player 2: ', player_selector_list,
                                 onchange=lambda _, player: self.set_player(1, constants.player_types[player]))
         self.set_player(0, constants.player_types[player_selector_list[0][1]])
         self.set_player(1, constants.player_types[player_selector_list[0][1]])
-        s = "dwd"
-        i = 12
+
         self._menu.add.button('Play', self.play)
-        self._menu.add.button('Train AI', self._game.train_start)
+
+        self._menu.add.button('Train NEAT AI', self._game.neat_train_start)
+        self._menu.add.button('Train Keras AI', self._game.train_start)
+        self._menu.add.button('Train Neural AI', neural_networks.start_training)
+
         self._menu.add.button('Save model', self._game.save_model)
-        #self._menu.add.button('Save best model', self._game.save_best_model)
+        # self._menu.add.button('Save best model', self._game.save_best_model)
         self._menu.add.button('Load model', self._game.load_model)
         self._menu.add.button('Load best model (3x3)', self._game.load_best_model)
+
+        self._menu.add.button('Generate training data for Neural AI', self._game.generate_training_data)
         self._menu.add.button('Quit', self._menu.disable)
 
         pygame.font.init()  # you have to call this at the start,
@@ -75,10 +83,12 @@ class Interface:
 
     def display_board(self, board):
         """displays the board on screen"""
-        self._screen.fill(constants.white_color)
         for x in range(board.width):
             for y in range(board.height):
-                self._screen.blit(self._symbols[board.get_tile((x, y))], (x * self._tile_width, y * self._tile_height))
+                self._screen.blit(self._symbols[None], (x * self._tile_width, y * self._tile_height))
+                tile = board.get_tile((x, y))
+                if tile is not None:
+                    self._screen.blit(self._symbols[tile], (x * self._tile_width, y * self._tile_height))
         pygame.display.update()
         pygame.display.flip()
 

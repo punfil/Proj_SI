@@ -3,7 +3,14 @@ from ai_player_random import AIPlayerRandom
 from ai_player_minmax import AIPlayerMinMax
 from ai_player_alphabeta import AIPlayerAlphaBeta
 from ai_player_neat import AIPlayerNEAT
-from ai_player_keras import AIPlayerKERAS
+from ai_player_keras import AIPlayerKeras
+from ai_player_neural import AIPlayerNeural
+
+from neural_networks import FFNHyperparams
+
+default_hyperparams = FFNHyperparams(num_inputs=64, num_outputs=1, hidden_dims=[64, 4096, 4096, 4096, 4096, 4096, 64],
+                                     activation_fcn='tanh', learning_rate=0.0001)
+training_epochs = 75
 
 menu_play_game = 0
 menu_exit = 1
@@ -17,8 +24,9 @@ player_types = {
     "Random": AIPlayerRandom,
     "MinMax": AIPlayerMinMax,
     "AlphaBeta": AIPlayerAlphaBeta,
-    #"NEAT": AIPlayerNEAT,
-    "KERAS": AIPlayerKERAS
+    "NEAT": AIPlayerNEAT,
+    "Keras": AIPlayerKeras,
+    "Neural": AIPlayerNeural
 }
 
 symbols = ['x', 'o']
@@ -28,12 +36,12 @@ symbols_images = {
     None: "images/empty.png"
 }
 
-board_width = 3
-board_height = 3
+board_width = 8
+board_height = 8
 
-window_height = 800
-window_width = 800
+window_height = 96 * board_width
+window_width = 96 * board_height
 
 white_color = (255, 255, 255)
 
-required_line_length = 3  # how many symbols in a row are needed to win the game
+required_line_length = 5  # how many symbols in a row are needed to win the game

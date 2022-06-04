@@ -1,15 +1,18 @@
 from player import Player
 from copy import deepcopy
+import numpy as np
 import sys
 import random
 
 
 class AIPlayer(Player):
-    def __init__(self, symbol, game, recursion_depth, heuristic_function):
+    def __init__(self, symbol, game, recursion_depth, heuristic_function, save_evaluations=False):
         super().__init__(symbol, game)
 
         self._recursion_depth = recursion_depth
         self._heuristic_function = heuristic_function
+
+        self._save_evaluations = save_evaluations
 
     def get_move(self):
         x, y = self.decide()
@@ -38,6 +41,13 @@ class AIPlayer(Player):
             evals[i] = self.recursive_function(new_board, self._recursion_depth - 1,
                                                self._game.get_next_symbol(self._symbol))
             # print()
+            if self._save_evaluations:
+                with open("board_evaluations.json", 'a') as file:
+                    board_array = new_board.to_array(self._symbol)
+                    to_save = np.array2string(board_array,
+                                              max_line_width=sys.maxsize, separator=',',
+                                              threshold=sys.maxsize, edgeitems=sys.maxsize, sign=' ')
+                    file.write(f"\"{to_save}\": {evals[i]},\n")
 
         # for i in range(len(evals)):
         #     print(moves[i], '~', evals[i])

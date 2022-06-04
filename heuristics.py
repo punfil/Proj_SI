@@ -34,6 +34,53 @@ def line_length(board, active_player_symbol):
     return score
 
 
+def better_line_length(board, active_player_symbol):
+    score = basic(board, active_player_symbol)
+    if score == sys.maxsize:
+        return score - len(board.get_occupied_tiles())
+    elif score == -sys.maxsize:
+        return score + len(board.get_occupied_tiles())
+
+    length = constants.required_line_length
+    # if length > board.width or length > board.height:
+    #    length = constants.required_line_length
+    for line in board.iter_lines(length):
+        my_symbols_max = 0
+        my_symbols = 0
+        other_symbols_max = 0
+        other_symbols = 0
+        for symbol in line:
+            if symbol == active_player_symbol:
+                my_symbols += 1
+                if my_symbols == constants.required_line_length:
+                    return sys.maxsize - len(board.get_occupied_tiles())
+                if other_symbols > other_symbols_max:
+                    other_symbols_max = other_symbols
+                other_symbols = 0
+            else:
+                if symbol is not None:
+                    other_symbols += 1
+                    if my_symbols > my_symbols_max:
+                        my_symbols_max = my_symbols
+                    my_symbols = 0
+
+        if my_symbols > my_symbols_max:
+            my_symbols_max = my_symbols
+        if other_symbols > other_symbols_max:
+            other_symbols_max = other_symbols
+
+        score += (my_symbols_max ** 3) // 8
+        score -= (other_symbols_max ** 3) // 8
+    # board.draw()
+    # print(score, "???", active_player_symbol)
+    return score
+
+
+def num_tiles_test(board, active_player_symbol):
+    score = len(board.get_occupied_tiles())
+    return score
+
+
 def line_length_turn_number(board, active_player_symbol):
     score = line_length(board, active_player_symbol)
 

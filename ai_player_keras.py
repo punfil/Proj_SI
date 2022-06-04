@@ -8,7 +8,7 @@ import copy
 import random
 
 
-class AIPlayerKERAS(Player):
+class AIPlayerKeras(Player):
 
     def get_possible_moves(self, board):
         moves = board.get_free_tiles_with_neighbour()

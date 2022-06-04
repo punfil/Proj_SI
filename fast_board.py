@@ -31,7 +31,7 @@ class FastBoard(Board):
         self._occupied_tiles = set()
 
     def get_free_tiles(self):
-        return list(self._free_tiles)  # todo maybe remove casting to list (not that important) (requires changes in AI)
+        return list(self._free_tiles)
 
     def get_free_tiles_with_neighbour(self):
         return list(self._free_tiles_with_neighbour)
