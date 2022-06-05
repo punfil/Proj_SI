@@ -88,24 +88,33 @@ class Game:
             current_player = self._players[current_player_index]
             current_player_index = (current_player_index + 1) % len(self._players)
 
-            self._click_x = None
-            self._click_y = None
-            self._interface.get_events()  # without this line the window freezes in long AI vs AI games
-            while not current_player.is_ready():
-                event_type, mouse_x, mouse_y = self._interface.get_events()
-                if event_type == constants.menu_exit:
-                    game_running = False
-                elif event_type == constants.mouse_clicked:
-                    self._click_x = mouse_x
-                    self._click_y = mouse_y
-            if not game_running:
-                break
+            # repeat until player makes a valid move (for human players accidentaly clicking occupied tiles)
+            try_again = True
+            while try_again:
+                try:
+                    self._click_x = None
+                    self._click_y = None
+                    self._interface.get_events()  # without this line the window freezes in long AI vs AI games
+                    while not current_player.is_ready():
+                        event_type, mouse_x, mouse_y = self._interface.get_events()
+                        if event_type == constants.menu_exit:
+                            game_running = False
+                        elif event_type == constants.mouse_clicked:
+                            self._click_x = mouse_x
+                            self._click_y = mouse_y
+                    if not game_running:
+                        break
 
-            x, y = current_player.get_move()
-            self._board.make_move((x, y), current_player.symbol)
+                    x, y = current_player.get_move()
+                    self._board.make_move((x, y), current_player.symbol)
+                    try_again = False
+                except ValueError:
+                    print("Wrong move!")
+
 
             winner = self._board.get_winner()
             if winner or self._board.check_draw():
+                self._interface.display_board(self._board)
                 game_running = False
                 if display_interface:
                     print("winner:", winner)
@@ -226,7 +235,7 @@ class Game:
         self.generate_data(10, "RandomAlphax10")
         self._ticTacToeModel.train(self._trainingHistory)
 
-    def generate_training_data(self, num_games=15):
+    def generate_training_data(self, num_games=50):
         """generates training data for Neural Heuristics AI.
         The data is a json file containing: {"board_representation": eval, ...}
         """
@@ -239,12 +248,12 @@ class Game:
 
             self._players = [None, None]
             self._players[0] = constants.player_types["AlphaBeta"]('x', self, constants.ai_recursion_depth,
-                                                                   heuristics.num_tiles_test, save_evaluations=True)
+                                                                   heuristics.better_line_length, save_evaluations=True)
             self._players[1] = constants.player_types["AlphaBeta"]('o', self, constants.ai_recursion_depth,
-                                                                   heuristics.num_tiles_test, save_evaluations=True)
+                                                                   heuristics.better_line_length, save_evaluations=True)
             self._board.clear()
-            for j in range(6):
-                # each player makes 3 random moves before the start of the real game
+            for j in range(random.choice((0, 2, 2, 2, 4, 4, 6, 6))):
+                # each player makes a few random moves before the start of the real game
                 # this is to increase variation in the training data and reduce the chance of evaluating same boards
 
                 if j % 2 == 0:
