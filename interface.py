@@ -68,6 +68,9 @@ class Interface:
 
     def display_result(self, winner):
         """displays the result of the game"""
+        start = time.time()
+        while time.time() - start < constants.results_displaying_time:
+            pygame.event.get()
         self._screen.fill(constants.white_color)
         if winner is None:
             text_surface = self._font.render(f"Draw!", False, (0, 0, 0))

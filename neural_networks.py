@@ -48,7 +48,6 @@ def train(model, train_data, valid_data=None, training_dir='exp_00/'):
 
     (x, y) = train_data
 
-    # TODO define callbacks EarlyStopping, ModelCheckpoint, TensorBoard
     # my callbacks
     es_cbk = tf.keras.callbacks.EarlyStopping(
         monitor="val_loss",
