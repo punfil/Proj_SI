@@ -48,9 +48,10 @@ class Interface:
         self._menu.add.button('Train Neural AI', neural_networks.start_training)
 
         self._menu.add.button('Save model', self._game.save_model)
-        # self._menu.add.button('Save best model', self._game.save_best_model)
+        #self._menu.add.button('Save best model', self._game.save_best_model)
         self._menu.add.button('Load model', self._game.load_model)
-        self._menu.add.button('Load best model (3x3)', self._game.load_best_model)
+        self._menu.add.button('Load best model', self._game.load_best_model)
+        #self._menu.add.button('Generate statistic', self.generate_statistic)
 
         self._menu.add.button('Generate training data for Neural AI', self._game.generate_training_data)
         self._menu.add.button('Quit', self._menu.disable)
@@ -99,6 +100,10 @@ class Interface:
         """runs the game"""
         self._game.set_players(self._players)
         self._game.play()
+
+    def generate_statistic(self):
+        self._game.set_players(self._players)
+        self._game.generate_statistic()
 
     def set_player(self, player_index, player_type):
         """sets type of player at player_index (0 or 1) to player_type (a class of the chosen player)"""

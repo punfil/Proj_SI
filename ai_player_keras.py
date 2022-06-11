@@ -61,6 +61,7 @@ class AIPlayerKeras(Player):
         val_list2 = []
         val_list1 = []
         minValue = 1.0
+        maxValue = 0.0
         bestMove = availableMoves[0]
         for availableMove in availableMoves:
             # get a copy of a board
@@ -74,14 +75,18 @@ class AIPlayerKeras(Player):
                 value = self._game.model.predict(boardCopy, 2)
                 value2 = self._game.model.predict(boardCopy, 0)
                 value1 = self._game.model.predict(boardCopy, 1)
+                if value <= minValue:
+                    minValue = value
+                    bestMove = availableMove
             else:
                 boardCopy[availableMove[0]][availableMove[1]] = 1
                 value = self._game.model.predict(boardCopy, 0)
                 value2 = self._game.model.predict(boardCopy, 2)
                 value1 = self._game.model.predict(boardCopy, 1)
-            if value <= minValue:
-                minValue = value
-                bestMove = availableMove
+                if value2 >= maxValue:
+                    maxValue = value2
+                    bestMove = availableMove
+
             val_list.append((value,availableMove))
             val_list2.append((value2,availableMove))
             val_list1.append((value1,availableMove))
@@ -90,7 +95,8 @@ class AIPlayerKeras(Player):
         print("me: ",val_list2)
         print("draw: ",val_list1)
         print("best: ", bestMove)
-        print("best val: ", minValue)
+        print("max o val: ", maxValue)
+        print("min o val: ", minValue)
         return bestMove
 
     def is_ready(self):

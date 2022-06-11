@@ -4,6 +4,8 @@ from keras.models import Sequential
 from keras.utils import to_categorical
 import numpy as np
 
+import constants
+
 
 class TicTacToeModel:
 
@@ -13,10 +15,34 @@ class TicTacToeModel:
         self.numberOfInputs = numberOfInputs
         self.numberOfOutputs = numberOfOutputs
         self.model = Sequential()
-        self.model.add(Dense(64, activation='relu', input_shape=(numberOfInputs, )))
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dense(128, activation='relu'))
+
+        #self.model.add(Dense(64, activation='relu', input_shape=(numberOfInputs, )))
+        #self.model.add(Dense(128, activation='relu'))
+       # self.model.add(Dense(128, activation='relu'))
+        #self.model.add(Dense(128, activation='relu'))
+
+        #Dalej zrobic zeby na 100 epokach i zwiekszyc jeszcze te neurony
+        if constants.board_width == 5:
+            # self.epochs = 100
+            # self.model.add(Dense(64, activation='relu', input_shape=(numberOfInputs, )))
+            # self.model.add(Dense(128, activation='relu'))
+            # self.model.add(Dense(128, activation='relu'))
+            # self.model.add(Dense(128, activation='relu'))
+            # self.model.add(Dense(128, activation='relu'))
+            # self.model.add(Dense(128, activation='relu'))
+            self.epochs = 20
+            self.model.add(Dense(512, activation='relu', input_shape=(numberOfInputs,)))
+            self.model.add(Dense(512, activation='relu'))
+            self.model.add(Dense(512, activation='relu'))
+            self.model.add(Dense(256, activation='relu'))
+            #self.model.add(Dense(64, activation='relu'))
+
+        else:
+            self.model.add(Dense(64, activation='relu', input_shape=(numberOfInputs,)))
+            self.model.add(Dense(128, activation='relu'))
+            self.model.add(Dense(128, activation='relu'))
+            self.model.add(Dense(128, activation='relu'))
+
         self.model.add(Dense(numberOfOutputs, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
@@ -51,10 +77,10 @@ class TicTacToeModel:
 
     def save_best(self):
         """To save best model"""
-        self.model.save_weights('./checkpoints/best_checkpoint')
+        self.model.save_weights('./checkpoints/best_checkpoint_%i_size'%constants.board_width)
         print("SAVED BEST")
 
     def load_best(self):
         """To load actual the best model"""
-        self.model.load_weights('./checkpoints/best_checkpoint')
+        self.model.load_weights('./checkpoints/best_checkpoint_%i_size'%constants.board_width)
         print("LOADED BEST")

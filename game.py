@@ -13,6 +13,8 @@ import random
 from random import randrange
 import neat
 import pickle
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Game:
@@ -211,8 +213,11 @@ class Game:
 
     def load_data(self, postfix=""):
         """load data to training History"""
+        loaded = []
         with open('./data/data_%i_size_%s.pickle' % (constants.board_width, postfix), 'rb') as f:
-            self._trainingHistory = pickle.load(f)
+            loaded = pickle.load(f)
+        for l in loaded:
+            self._trainingHistory.append(l)
 
     def save_model(self):
         """save model (previous is overwritten!!!)"""
@@ -232,9 +237,34 @@ class Game:
 
     def train_start(self):
         """Train keras model, generate or load data and train"""
-        self.generate_data(10, "RandomAlphax10")
+        #self.generate_data(10000, "RandomAlphax10000_5x5_3")
+        self.load_data("RandomAlphax10000_5x5")
+        self.load_data("RandomAlphax10000_5x5_2")
+        #self.load_data("RandomAlphax10000_5x5_3")
         self._ticTacToeModel.train(self._trainingHistory)
 
+    def generate_statistic(self):
+        """Generate bar statistic for n games (Statistic for players choosen in menu)"""
+        n = 100
+        statistic = {'x': 0, 'o': 0, 'draw': 0}
+
+
+        for _ in range(n):
+            symbol, turns, dur = self.play(False,True)
+            if symbol == 'x':
+                statistic['x'] = statistic.get('x', 0) + 1
+            elif symbol == 'o':
+                statistic['o'] = statistic.get('o', 0) + 1
+            else:
+                statistic['draw'] = statistic.get('draw', 0) + 1
+
+        courses = list(statistic.keys())
+        values = list(statistic.values())
+        plt.bar(courses, values, color='maroon', width=0.4)
+        plt.xlabel("Wyniki gier")
+        plt.ylabel("Ilość danego wyniku")
+        plt.title("Statystyki %i gier"%n)
+        plt.show()
     def generate_training_data(self, num_games=50):
         """generates training data for Neural Heuristics AI.
         The data is a json file containing: {"board_representation": eval, ...}

@@ -1,2 +1,2 @@
-model_checkpoint_path: "best_checkpoint"
-all_model_checkpoint_paths: "best_checkpoint"
+model_checkpoint_path: "best_checkpoint_5_size"
+all_model_checkpoint_paths: "best_checkpoint_5_size"

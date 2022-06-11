@@ -39,8 +39,8 @@ symbols_images = {
 board_width = 5
 board_height = 5
 
-window_height = 96 * board_width
-window_width = 96 * board_height
+window_height = 600
+window_width = 600
 
 white_color = (255, 255, 255)
 
