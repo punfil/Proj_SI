@@ -48,17 +48,16 @@ class FastBoard(Board):
         y = position[1]
         for x in range(self._width):
             tile = self.get_tile((x, y))
-            if tile is not None:
-                if tile != current_symbol:
-                    current_symbol = tile
-                    line_length = 1
-                else:
-                    line_length += 1
+            if tile != current_symbol:
+                current_symbol = tile
+                line_length = 1
+            else:
+                line_length += 1
 
-                if line_length >= constants.required_line_length:
-                    # print("---HORIZONTAL VICTORY---", current_symbol)
-                    self._winner = current_symbol
-                    return
+            if line_length >= constants.required_line_length:
+                # print("---HORIZONTAL VICTORY---", current_symbol)
+                self._winner = current_symbol
+                return
 
         # ||| vertical |||
         line_length = 0
@@ -66,17 +65,16 @@ class FastBoard(Board):
         x = position[0]
         for y in range(self._height):
             tile = self.get_tile((x, y))
-            if tile is not None:
-                if tile != current_symbol:
-                    current_symbol = tile
-                    line_length = 1
-                else:
-                    line_length += 1
+            if tile != current_symbol:
+                current_symbol = tile
+                line_length = 1
+            else:
+                line_length += 1
 
-                if line_length >= constants.required_line_length:
-                    # print("\\\\\\DIAGONAL VICTORY\\\\\\", current_symbol)
-                    self._winner = current_symbol
-                    return
+            if line_length >= constants.required_line_length:
+                # print("\\\\\\DIAGONAL VICTORY\\\\\\", current_symbol)
+                self._winner = current_symbol
+                return
 
         # diagonals adapted from this:
         # https://stackoverflow.com/questions/56815012/how-to-get-the-element-which-are-diagonal-to-a-certain-index-in-an-array-which-r
@@ -88,17 +86,16 @@ class FastBoard(Board):
         y = position[1] - min(self._width - position[0] - 1, position[1])
         while x >= 0 and y < self._height:
             tile = self.get_tile((x, y))
-            if tile is not None:
-                if tile != current_symbol:
-                    current_symbol = tile
-                    line_length = 1
-                else:
-                    line_length += 1
+            if tile != current_symbol:
+                current_symbol = tile
+                line_length = 1
+            else:
+                line_length += 1
 
-                if line_length >= constants.required_line_length:
-                    # print("///DIAGONAL VICTORY///", current_symbol)
-                    self._winner = current_symbol
-                    return
+            if line_length >= constants.required_line_length:
+                # print("///DIAGONAL VICTORY///", current_symbol)
+                self._winner = current_symbol
+                return
             x -= 1
             y += 1
 
@@ -109,17 +106,16 @@ class FastBoard(Board):
         y = position[1] - min(position[0], position[1])
         while x < self._width and y < self._height:
             tile = self.get_tile((x, y))
-            if tile is not None:
-                if tile != current_symbol:
-                    current_symbol = tile
-                    line_length = 1
-                else:
-                    line_length += 1
+            if tile != current_symbol:
+                current_symbol = tile
+                line_length = 1
+            else:
+                line_length += 1
 
-                if line_length >= constants.required_line_length:
-                    # print("|||VERTICAL VICTORY|||", current_symbol)
-                    self._winner = current_symbol
-                    return
+            if line_length >= constants.required_line_length:
+                # print("|||VERTICAL VICTORY|||", current_symbol)
+                self._winner = current_symbol
+                return
             x += 1
             y += 1
 
