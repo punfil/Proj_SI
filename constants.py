@@ -8,9 +8,9 @@ from ai_player_neural import AIPlayerNeural
 
 from neural_networks import FFNHyperparams
 
-default_hyperparams = FFNHyperparams(num_inputs=25, num_outputs=1, hidden_dims=[25, 625, 625, 15625, 625, 625, 625, 25],
-                                     activation_fcn='tanh', learning_rate=0.0001)
-training_epochs = 75
+default_hyperparams = FFNHyperparams(num_inputs=25, num_outputs=1, hidden_dims=[25, 625, 15625, 625, 25],
+                                     activation_fcn='tanh', learning_rate=0.001)
+training_epochs = 150
 
 menu_play_game = 0
 menu_exit = 1
