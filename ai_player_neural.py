@@ -10,7 +10,7 @@ class AIPlayerNeural(AIPlayerAlphaBeta):
 
         hp = constants.default_hyperparams
         model = build_model(hp)
-        model.load_weights('./training/final_weights')
+        model.load_weights('./training/model_best_weights')
 
         self._model = model
 

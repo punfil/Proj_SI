@@ -1,1 +1,1 @@
-{"num_inputs": 25, "num_outputs": 1, "hidden_dims": [25, 625, 625, 15625, 625, 625, 625, 25], "activation_fcn": "tanh", "learning_rate": 1e-08}
+{"num_inputs": 25, "num_outputs": 1, "hidden_dims": [25, 625, 625, 15625, 625, 625, 25], "activation_fcn": "tanh", "learning_rate": 0.0001}
